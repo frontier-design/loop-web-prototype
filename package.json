@@ -1,5 +1,5 @@
 {
-  "name": "project-template",
+  "name": "loop-web-prototype",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "gsap": "^3.14.2",
+    "maplibre-gl": "^5.13.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "styled-components": "^6.3.6"

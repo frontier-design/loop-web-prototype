@@ -337,7 +337,7 @@ function Landing() {
         muted
         loop
         playsInline
-        src="/video/landing-video.mp4"
+        src={`${import.meta.env.BASE_URL}video/landing-video.mp4`}
         onPlay={() => setIsBackgroundVideoPlaying(true)}
         onPause={() => setIsBackgroundVideoPlaying(false)}
       />
@@ -406,7 +406,7 @@ A groundbreaking 80km multi-use trail that will connect Toronto’s ravines, nei
             muted={false}
             loop={false}
           >
-            <source src="/video/landing-video.mp4" type="video/mp4" />
+            <source src={`${import.meta.env.BASE_URL}video/landing-video.mp4`} type="video/mp4" />
           </video>
         </VideoModalContent>
       </VideoModalWrapper>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 
 import landmark1Icon from '../assets/icons/landmark-1.svg';
@@ -11,17 +11,20 @@ const ICON_SRC = {
   'landmark-3': landmark3Icon,
 };
 
-// Smaller than hubs (hubs are ~64×75px) so landmarks are secondary
 const LANDMARK_SIZE = 60;
+const SCALE_HOVER = 1.25;
 
-function LandmarkMarkersLayer({ map, data }) {
+function LandmarkMarkersLayer({ map, data, scaledLandmarkIds = [] }) {
   const markersRef = useRef([]);
+  const markerElementsRef = useRef({});
+  const [hoveredLandmarkId, setHoveredLandmarkId] = useState(null);
 
   useEffect(() => {
     if (!map || !data?.landmarks?.length) return;
 
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
+    markerElementsRef.current = {};
 
     data.landmarks.forEach((landmark) => {
       const src = ICON_SRC[landmark.icon] || landmark1Icon;
@@ -30,10 +33,17 @@ function LandmarkMarkersLayer({ map, data }) {
       el.className = 'landmark-marker';
       el.style.width = `${LANDMARK_SIZE}px`;
       el.style.height = `${LANDMARK_SIZE}px`;
-      el.style.cursor = 'default';
-      el.style.display = 'flex';
-      el.style.alignItems = 'center';
-      el.style.justifyContent = 'center';
+      el.style.cursor = 'pointer';
+      el.style.overflow = 'visible';
+
+      const inner = document.createElement('div');
+      inner.style.width = '100%';
+      inner.style.height = '100%';
+      inner.style.display = 'flex';
+      inner.style.alignItems = 'center';
+      inner.style.justifyContent = 'center';
+      inner.style.transition = 'transform 0.2s ease';
+      inner.style.transformOrigin = 'center center';
 
       const img = document.createElement('img');
       img.src = src;
@@ -42,7 +52,13 @@ function LandmarkMarkersLayer({ map, data }) {
       img.style.height = '100%';
       img.style.objectFit = 'contain';
       img.style.pointerEvents = 'none';
-      el.appendChild(img);
+      inner.appendChild(img);
+      el.appendChild(inner);
+
+      el.addEventListener('mouseenter', () => setHoveredLandmarkId(landmark.id));
+      el.addEventListener('mouseleave', () => setHoveredLandmarkId(null));
+
+      markerElementsRef.current[landmark.id] = inner;
 
       const marker = new maplibregl.Marker({
         element: el,
@@ -57,8 +73,20 @@ function LandmarkMarkersLayer({ map, data }) {
     return () => {
       markersRef.current.forEach(marker => marker.remove());
       markersRef.current = [];
+      markerElementsRef.current = {};
     };
   }, [map, data]);
+
+  useEffect(() => {
+    if (!data?.landmarks?.length) return;
+    const ids = new Set(scaledLandmarkIds);
+    data.landmarks.forEach((landmark) => {
+      const el = markerElementsRef.current[landmark.id];
+      if (!el) return;
+      const shouldScale = hoveredLandmarkId === landmark.id || ids.has(landmark.id);
+      el.style.transform = shouldScale ? `scale(${SCALE_HOVER})` : 'scale(1)';
+    });
+  }, [hoveredLandmarkId, scaledLandmarkIds, data?.landmarks]);
 
   return null;
 }

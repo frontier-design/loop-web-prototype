@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import styled from 'styled-components'
 import { GRID } from '../../../grid/config.js'
+import { Grid, GridCell } from '../../../grid/index.js'
 import stackImage1 from '../../../assets/images/black-creek.png'
 import mountDennisImage from '../../../assets/images/mount-dennis.jpg'
 import lowerDonImage from '../../../assets/images/lower-don.jpg'
@@ -22,9 +23,42 @@ const Section = styled.section`
   position: relative;
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   min-height: 100vh;
   overflow: visible;
+`
+
+const MapIntroBlock = styled.div`
+  width: 100%;
+  padding: clamp(13rem, 6vw, 15rem) 0 clamp(2rem, 4vw, 3rem);
+  background: #f5f4f0;
+`
+
+const MapIntroTitle = styled.h2`
+  font-family: 'ABCDiatype', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: #1a1a1a;
+  margin: 0 0 0.5em 0;
+`
+
+const MapIntroParagraph = styled.p`
+  font-family: 'ABCDiatype', system-ui, sans-serif;
+  font-weight: 300;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  line-height: 1.4;
+  color: #333;
+  margin: 0;
+  max-width: 32em;
+`
+
+const SectionRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 100vh;
 
   @media (max-width: ${GRID.BREAKPOINT}) {
     flex-direction: column;
@@ -274,11 +308,22 @@ const CONTENT_BLOCKS = [
   },
 ]
 
+function pickRandomLandmarkIds(landmarks, count = 2) {
+  if (!landmarks?.length) return []
+  const shuffled = [...landmarks].sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, Math.min(count, landmarks.length)).map((l) => l.id)
+}
+
 function MapSection() {
   const [activeHubId, setActiveHubId] = useState(null)
+  const [listHoverScaledLandmarkIds, setListHoverScaledLandmarkIds] = useState([])
   const hubRefs = useRef({})
 
-  // Intersection Observer to track which hub is currently in view
+  // Track intersection ratio per hub so we can require "fully in" to activate and "mostly out" to deactivate
+  const hubRatiosRef = useRef({})
+
+  // Intersection Observer: pin turns red only when hub has fully entered the viewport,
+  // and turns off when the hub has mostly left, so there are moments with no active pin
   useEffect(() => {
     const hubBlocks = CONTENT_BLOCKS.filter((b) => b.type === 'hub')
     const elements = hubBlocks
@@ -287,29 +332,35 @@ function MapSection() {
 
     if (elements.length === 0) return
 
+    const FULLY_IN = 0.95   // hub must be at least 95% in view to activate pin
+    const MOSTLY_OUT = 0.4 // when active hub drops below 40% in view (60% out of viewport), deactivate
+
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find the entry with the largest intersection ratio that passes threshold
-        let bestEntry = null
-        let bestRatio = 0
-
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
-            bestRatio = entry.intersectionRatio
-            bestEntry = entry
-          }
+          const hubId = entry.target.id.replace('hub-', '')
+          hubRatiosRef.current[hubId] = entry.intersectionRatio
         })
 
-        if (bestEntry) {
-          // Extract hubId from the element's id (format: hub-{hubId})
-          const hubId = bestEntry.target.id.replace('hub-', '')
-          setActiveHubId(hubId)
-        }
+        const ratios = hubRatiosRef.current
+        const fullyInHubs = hubBlocks.filter((b) => (ratios[b.hubId] ?? 0) >= FULLY_IN)
+        const bestFullyIn = fullyInHubs.length
+          ? fullyInHubs.reduce((best, b) =>
+              (ratios[b.hubId] ?? 0) > (ratios[best.hubId] ?? 0) ? b : best
+            )
+          : null
+
+        setActiveHubId((prev) => {
+          if (bestFullyIn) return bestFullyIn.hubId
+          const currentRatio = prev ? (ratios[prev] ?? 0) : 0
+          if (currentRatio < MOSTLY_OUT) return null
+          return prev
+        })
       },
       {
         root: null,
-        threshold: [0, 0.25, 0.5, 0.75, 1],
-        rootMargin: '-20% 0px -20% 0px', // Consider element "active" when it's in the middle 60% of viewport
+        threshold: [0, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 1],
+        rootMargin: '0px',
       }
     )
 
@@ -337,6 +388,17 @@ function MapSection() {
 
   return (
     <Section>
+      <MapIntroBlock>
+        <Grid as="div">
+          <GridCell $start={1} $span={12} $startMobile={1} $spanMobile={4}>
+            <MapIntroTitle>Discover the Loop</MapIntroTitle>
+            <MapIntroParagraph>
+              Discover how the Loop will breathe life into the city and connect us in brand new ways.
+            </MapIntroParagraph>
+          </GridCell>
+        </Grid>
+      </MapIntroBlock>
+      <SectionRow>
       <ContentColumn>
         {CONTENT_BLOCKS.map((block, i) => {
           if (block.type === 'hub') {
@@ -370,7 +432,15 @@ function MapSection() {
                 </BlockTitle>
                 <BlockList>
                   {block.items.map((item, j) => (
-                    <BlockListItem key={j}>
+                    <BlockListItem
+                      key={j}
+                      onMouseEnter={() =>
+                        setListHoverScaledLandmarkIds(
+                          pickRandomLandmarkIds(landmarksData.landmarks, 2)
+                        )
+                      }
+                      onMouseLeave={() => setListHoverScaledLandmarkIds([])}
+                    >
                       {typeof item === 'string' ? (
                         <span>{item}</span>
                       ) : (
@@ -423,13 +493,18 @@ function MapSection() {
                   highlightedHubId={activeHubId}
                   onHubClick={handleHubMarkerClick}
                 />
-                <LandmarkMarkersLayer map={map} data={landmarksData} />
+                <LandmarkMarkersLayer
+                  map={map}
+                  data={landmarksData}
+                  scaledLandmarkIds={listHoverScaledLandmarkIds}
+                />
                 <MapLegend />
               </>
             )}
           </MapContainer>
         </MapSticky>
       </MapColumn>
+      </SectionRow>
     </Section>
   )
 }

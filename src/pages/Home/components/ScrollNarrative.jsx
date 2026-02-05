@@ -33,6 +33,7 @@ const ScrollNarrativeSection = styled.section`
   overflow: hidden;
   /* background: #f5f5f5; */
   perspective: 1200px;
+  background-color: var(--color-forest);
 
   @media (max-width: 768px) {
     perspective: 800px;
@@ -115,14 +116,14 @@ const TextSlide = styled.div`
 
 const CenteredText = styled.p`
   width: 100%;
-  max-width: 950px;
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
   font-family: 'ABCDiatype', system-ui, sans-serif;
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(3rem, 5vw, 4rem);
   font-weight: 700;
   line-height: 1.2;
-  color: #1a1a1a;
+  color: var(--color-lime);
 
   @media (max-width: 768px) {
     max-width: 100%;

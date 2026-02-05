@@ -57,19 +57,6 @@ const Logo = styled.a`
   }
 `
 
-const NavCenter = styled.div`
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: clamp(1.25rem, 2.5vw, 2.5rem);
-
-  @media (max-width: ${GRID.BREAKPOINT}) {
-    display: none;
-  }
-`
-
 const Links = styled.div`
   display: flex;
   align-items: center;
@@ -81,6 +68,7 @@ const NavRight = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: clamp(1.25rem, 2.5vw, 2.5rem);
   min-width: 0;
 
   @media (max-width: ${GRID.BREAKPOINT}) {
@@ -303,7 +291,7 @@ function Nav() {
         <NavLeft>
           <Logo href="#" $dark={isDarkBackground} $menuOpen={menuOpen}>The Loop Trail</Logo>
         </NavLeft>
-        <NavCenter>
+        <NavRight>
           <Links>
             {NAV_LINKS.map(({ label, href }) => (
               <NavLink key={href} href={href} $dark={isDarkBackground}>
@@ -311,8 +299,6 @@ function Nav() {
               </NavLink>
             ))}
           </Links>
-        </NavCenter>
-        <NavRight>
           <CtaButton href="#get-involved" $dark={isDarkBackground}>Get Involved</CtaButton>
         </NavRight>
         <MenuToggle

@@ -125,11 +125,9 @@ const CloseButton = styled.button`
   z-index: 10;
   width: 40px;
   height: 40px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
+  background: white;
+  border: none;
+  color: black;
   cursor: pointer;
   display: flex;
   align-items: center;

@@ -167,15 +167,15 @@ const MobileCtaButton = styled.a`
   font-weight: 700;
   font-size: 1rem;
   padding: 0.75rem 1.5rem;
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--color-lime, #E7F5A6);
+  color: var(--color-forest, #154C2C);
   text-decoration: none;
   margin-top: 0.5rem;
   align-self: flex-start;
   transition: background 0.2s ease;
 
   &:hover {
-    background: #333;
+    background: #d4ed8f;
   }
 `
 
@@ -197,15 +197,15 @@ const CtaButton = styled.a`
   font-weight: 700;
   font-size: clamp(0.875rem, 1vw, 1rem);
   padding: 0.6rem 1.25rem;
-  background: ${props => props.$dark ? '#fff' : '#1a1a1a'};
-  color: ${props => props.$dark ? '#1a1a1a' : '#fff'};
+  background: ${props => props.$dark ? 'var(--color-lime, #E7F5A6)' : 'var(--color-forest, #154C2C)'};
+  color: ${props => props.$dark ? 'var(--color-forest, #154C2C)' : 'var(--color-lime, #E7F5A6)'};
   text-decoration: none;
   border: none;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
 
   &:hover {
-    background: ${props => props.$dark ? '#e5e5e5' : '#333'};
+    background: ${props => props.$dark ? '#d4ed8f' : '#1a5c38'};
   }
 
   @media (max-width: 768px) {

@@ -205,15 +205,15 @@ Error generating stack: `+_.message+`
   font-weight: 700;
   font-size: 1rem;
   padding: 0.75rem 1.5rem;
-  background: #1a1a1a;
-  color: #fff;
+  background: var(--color-lime, #E7F5A6);
+  color: var(--color-forest, #154C2C);
   text-decoration: none;
   margin-top: 0.5rem;
   align-self: flex-start;
   transition: background 0.2s ease;
 
   &:hover {
-    background: #333;
+    background: #d4ed8f;
   }
 `,nb=ei.a`
   font-family: 'ABCDiatype', system-ui, sans-serif;
@@ -231,15 +231,15 @@ Error generating stack: `+_.message+`
   font-weight: 700;
   font-size: clamp(0.875rem, 1vw, 1rem);
   padding: 0.6rem 1.25rem;
-  background: ${E=>E.$dark?"#fff":"#1a1a1a"};
-  color: ${E=>E.$dark?"#1a1a1a":"#fff"};
+  background: ${E=>E.$dark?"var(--color-lime, #E7F5A6)":"var(--color-forest, #154C2C)"};
+  color: ${E=>E.$dark?"var(--color-forest, #154C2C)":"var(--color-lime, #E7F5A6)"};
   text-decoration: none;
   border: none;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
 
   &:hover {
-    background: ${E=>E.$dark?"#e5e5e5":"#333"};
+    background: ${E=>E.$dark?"#d4ed8f":"#1a5c38"};
   }
 
   @media (max-width: 768px) {

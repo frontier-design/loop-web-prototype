@@ -116,7 +116,7 @@ const MapPlaceholder = styled.div`
 `
 
 const ContentBlock = styled.div`
-  padding: ${props => props.$imageOnly ? 0 : '2rem'};
+  padding: ${props => props.$imageOnly ? 0 : '3rem'};
   background: ${props => props.$bgColor};
   color: ${props => props.$textColor};
 `

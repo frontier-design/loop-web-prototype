@@ -66,7 +66,7 @@ const HubLink = styled.a`
 `
 
 const HubContent = styled.div`
-  padding: 2rem;
+  padding: 3rem;
 `
 
 /**
